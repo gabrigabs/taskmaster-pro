@@ -1,11 +1,11 @@
 package com.taskmaster_pro.api.services.impl;
 
 import com.taskmaster_pro.api.dtos.TaskDTO;
+import com.taskmaster_pro.api.mappers.TaskMapper;
 import com.taskmaster_pro.api.models.Task;
 import com.taskmaster_pro.api.models.enums.Status;
 import com.taskmaster_pro.api.repositories.TaskRepository;
 import com.taskmaster_pro.api.services.TaskService;
-import org.springframework.beans.BeanUtils;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -19,9 +19,11 @@ import java.util.UUID;
 public class TaskServiceImpl implements TaskService {
 
     private final TaskRepository taskRepository;
+    private final TaskMapper taskMapper;
 
-    public TaskServiceImpl(TaskRepository taskRepository) {
+    public TaskServiceImpl(TaskRepository taskRepository, TaskMapper taskMapper) {
         this.taskRepository = taskRepository;
+        this.taskMapper = taskMapper;
     }
 
     @Override
@@ -39,7 +41,7 @@ public class TaskServiceImpl implements TaskService {
     @Override
     public Task create(TaskDTO taskDTO) {
         Task task = new Task();
-        BeanUtils.copyProperties(taskDTO, task);
+        taskMapper.mapToEntity(taskDTO, task);
         task.setCreatedAt(LocalDateTime.now());
         return taskRepository.save(task);
     }
@@ -47,11 +49,17 @@ public class TaskServiceImpl implements TaskService {
     @Override
     public Task update(UUID id, TaskDTO taskDTO) {
         Task existingTask = findById(id);
-        if (Status.DONE.equals(taskDTO.getStatus()) && !Status.DONE.equals(existingTask.getStatus())) {
+
+        if (taskDTO.getStatus() != null &&
+                Status.DONE.equals(taskDTO.getStatus()) &&
+                !Status.DONE.equals(existingTask.getStatus())) {
             existingTask.setCompletedAt(LocalDateTime.now());
+        } else if (taskDTO.getStatus() != null &&
+                !Status.DONE.equals(taskDTO.getStatus())) {
+            existingTask.setCompletedAt(null);
         }
 
-        BeanUtils.copyProperties(taskDTO, existingTask, "id", "createdAt", "completedAt");
+        taskMapper.mapToEntity(taskDTO, existingTask);
         return taskRepository.save(existingTask);
     }
 
