@@ -10,7 +10,6 @@ class ApiClient {
   async getTasks(): Promise<Task[]> {
     const response = await fetch(`${this.baseUrl}/tasks`);
 
-    console.log(await response)
     if (!response.ok) {
       throw new Error(`Error: ${response.status}`);
     }
