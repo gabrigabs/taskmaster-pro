@@ -8,10 +8,11 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Data
 public class TaskDTO {
-    private Long id;
+    private UUID id;
 
     @NotBlank(message = "Title is required")
     private String title;
@@ -28,7 +29,5 @@ public class TaskDTO {
     private Category category;
 
     private LocalDateTime createdAt;
-    private LocalDateTime dueDate;
     private LocalDateTime completedAt;
-    private String assignee;
 }

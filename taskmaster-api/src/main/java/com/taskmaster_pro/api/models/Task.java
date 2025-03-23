@@ -42,9 +42,5 @@ public class Task {
 
     private LocalDateTime createdAt = LocalDateTime.now();
 
-    private LocalDateTime dueDate;
-
     private LocalDateTime completedAt;
-
-    private String assignee;
 }

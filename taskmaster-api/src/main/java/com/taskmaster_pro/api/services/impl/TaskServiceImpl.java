@@ -47,14 +47,11 @@ public class TaskServiceImpl implements TaskService {
     @Override
     public Task update(UUID id, TaskDTO taskDTO) {
         Task existingTask = findById(id);
-
         if (Status.DONE.equals(taskDTO.getStatus()) && !Status.DONE.equals(existingTask.getStatus())) {
             existingTask.setCompletedAt(LocalDateTime.now());
-        } else if (!Status.DONE.equals(taskDTO.getStatus())) {
-            existingTask.setCompletedAt(null);
         }
 
-        BeanUtils.copyProperties(taskDTO, existingTask, "id", "createdAt");
+        BeanUtils.copyProperties(taskDTO, existingTask, "id", "createdAt", "completedAt");
         return taskRepository.save(existingTask);
     }
 
